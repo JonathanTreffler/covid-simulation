@@ -5,7 +5,7 @@ console.log(canvas2D);
 
 var persons = [];
 
-let personCount = 20;
+let personCount = 60;
 let initalialInfected = 5;
 
 const circleRadius = 25;
@@ -66,14 +66,73 @@ function randomCoordinates() {
     };
 }
 
+function randomCoordinatesNoCollisions() {
+    let potentialCoordinates = {
+        x: random(circleRadius, drawingCanvas.width - circleRadius),
+        y: random(circleRadius, drawingCanvas.height - circleRadius)
+    };
+
+    for(person of persons) {
+        if(personsColliding(person, potentialCoordinates)) {
+            potentialCoordinates = randomCoordinatesNoCollisions();
+            break;
+        }
+    }
+
+    return potentialCoordinates;
+    
+}
+
+function diff (num1, num2) {
+  if (num1 > num2) {
+    return (num1 - num2);
+  } else {
+    return (num2 - num1);
+  }
+}
+
+function dist (x1, y1, x2, y2) {
+  var deltaX = diff(x1, x2);
+  var deltaY = diff(y1, y2);
+  var dist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+  return (dist);
+}
+
+function personsColliding(person1, person2) {
+    let distance = dist(person1.x, person1.y, person2.x, person2.y);
+
+    return (distance < circleRadius * 2);
+}
+
+function checkCollisions() {
+    for(let person1Id = 0; person1Id < this.persons.length; person1Id++) {
+        for(let person2Id = person1Id+1; person2Id < this.persons.length; person2Id++) {
+            let person1 = persons[person1Id];
+            let person2 = persons[person2Id];
+
+            if(personsColliding(person1, person2)) {
+                console.log("COLLISIONS");
+                [person1.speedX, person2.speedX] = [person2.speedX, person1.speedX];
+                [person1.speedY, person2.speedY] = [person2.speedY, person1.speedY];
+
+                if(person1.infected) {
+                    person2.infected = true;
+                }else if(person2.infected) {
+                    person1.infected = true;
+                }
+            }
+        }
+    }
+}
+
 for(let i = 0; i < personCount - initalialInfected; i++) {
-    let coordinates = randomCoordinates();
+    let coordinates = randomCoordinatesNoCollisions();
     console.log(coordinates);
     persons.push(new Person(coordinates.x, coordinates.y, false));
 }
 
 for(let i = 0; i < initalialInfected; i++) {
-    let coordinates = randomCoordinates();
+    let coordinates = randomCoordinatesNoCollisions();
     persons.push(new Person(coordinates.x, coordinates.y, true));
 }
 
@@ -85,7 +144,11 @@ setInterval(function() {
     for(person of persons) {
         person.move();
         person.checkWalls();
+    }
 
+    checkCollisions();
+
+    for(person of persons) {
         person.display(canvas2D);
     }
 }, 10);
