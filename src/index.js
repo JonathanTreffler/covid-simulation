@@ -1,8 +1,3 @@
-const drawingCanvas = document.getElementById("drawingCanvas");
-const canvas2D = drawingCanvas.getContext("2d");
-
-console.log(canvas2D);
-
 var persons = [];
 
 let personCount = 60;
@@ -19,9 +14,9 @@ function diff (num1, num2) {
 }
 
 function dist (x1, y1, x2, y2) {
-  var deltaX = diff(x1, x2);
-  var deltaY = diff(y1, y2);
-  var dist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+  let deltaX = diff(x1, x2);
+  let deltaY = diff(y1, y2);
+  let dist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
   return (dist);
 }
 
@@ -57,12 +52,21 @@ class Person {
         this.x += this.speedX;
         this.y += this.speedY;
 
-        let collisionDistance = coordinatesCollidingWithAnyoneDistance(newCoordinates);
-        
-        if(collisionDistance) {
-            this.x -= collisionDistance.xDist;
-            this.y -= collisionDistance.yDist;
+        let collidingPerson = coordinatesCollidingWithAnyone(newCoordinates);
+
+        if(collidingPerson) {
+            //let xDist = dist(collidingPerson.x, 0, newCoordinates.x, 0);
+            //let yDist = dist(0, collidingPerson.y, 0, newCoordinates.y);
+            //let dist = dist(collidingPerson.x, collidingPerson.y, newCoordinates.x, newCoordinates.y);
+
+            this.x -= xDist;
+            this.y -= yDist;
         }
+        
+        //if(collisionDistance) {
+            //this.x -= collisionDistance.xDist;
+            //this.y -= collisionDistance.yDist;
+        //}
     }
     checkWalls() {
         if(this.x < circleRadius || this.x + circleRadius > drawingCanvas.width) {
@@ -173,19 +177,26 @@ for(let i = 0; i < initalialInfected; i++) {
     persons.push(new Person(coordinates.x, coordinates.y, true));
 }
 
-// Draw Loop
-setInterval(function() {
-    //reset Canvas
-    canvas2D.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+window.onload = function () {
+    const drawingCanvas = document.getElementById("drawingCanvas");
+    const canvas2D = drawingCanvas.getContext("2d");
 
-    for(person of persons) {
-        person.move();
-        person.checkWalls();
-    }
+    console.log(canvas2D);
+    
+    // Draw Loop
+    setInterval(function() {
+        //reset Canvas
+        canvas2D.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
 
-    checkCollisions();
+        for(person of persons) {
+            person.move();
+            person.checkWalls();
+        }
 
-    for(person of persons) {
-        person.display(canvas2D);
-    }
-}, 10);
+        checkCollisions();
+
+        for(person of persons) {
+            person.display(canvas2D);
+        }
+    }, 10);
+}
