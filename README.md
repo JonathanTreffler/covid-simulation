@@ -1,7 +1,7 @@
-# covid-simulation-javascript-template
-The Template for the Covid Simulation of Lesson 7 written in Javascript.
+# Covid Simulation
+This is a school project.
 
-Written by Jonathan Treffler.
+Based on the [javascript template](https://github.com/algorithmik-kurs/covid-simulation-javascript-template) i wrote for my classmates.
 
 ## Prerequisites
  - Node JS >= 12
